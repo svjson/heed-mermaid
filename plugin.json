@@ -1,0 +1,22 @@
+{
+  "pluginId": "mermaid",
+  "pluginBase": "plugins/mermaid/",
+  "defaultConfig": {},
+  "requires": {
+    "js": [
+      "js/mermaid.min.js"
+    ]
+  },
+  "provides": {
+    "hooks": {
+      "init": {
+        "src": "MermaidInitHook.js"
+      }
+    },
+    "layoutComponents": {
+      "mermaid-diagram-block": {
+        "src": "MermaidDiagramBlock.js"
+      }
+    }
+  }
+}

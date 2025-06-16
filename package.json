@@ -1,0 +1,20 @@
+{
+  "name": "heed-mermaid",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "Sven Johansson",
+  "description": "Plugin for Heed, providing Mermaid graph blocks.",
+  "type": "module",
+  "files": [
+    "plugin.json",
+    "MermaidDiagramBlock.js",
+    "js/",
+    "css/"
+  ],
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "dependencies": {
+    "mermaid": "^11.6.0"
+  }
+}

@@ -1,0 +1,22 @@
+node_modules/
+js/
+
+# ---- Emacs ----
+*~
+\#*\#
+.\#*
+*.elc
+auto-save-list/
+
+# ---- Various Editor/Tooling ----
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+tags
+TAGS
+
+# ---- Misc ----
+*.log
+
