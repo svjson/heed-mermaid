@@ -1,7 +1,49 @@
 (function() {
   class MermaidDiagramBlock extends Heed.AbstractContentSection {
+
+    static renderQueue = [];
+    static isRendering = false;
+
     constructor(section, slide) {
       super(section, slide);
+    }
+
+    static enqueue(renderJob) {
+      this.renderQueue.push(renderJob);
+      this.attemptRender();
+    }
+
+    static async attemptRender() {
+      if (this.isRendering) return;
+      this.isRendering = true;
+
+      try {
+        while (this.renderQueue.length > 0) {
+          const mermaidEl = this.renderQueue.shift();
+          await window.mermaid.init(undefined, mermaidEl);
+          this.postMermaidRender(mermaidEl);
+        }
+      } catch (e) {
+        console.error('Mermaid render error: ', e);
+      } finally {
+        this.isRendering = false;
+      }
+    }
+
+    static postMermaidRender(mermaidEl) {
+      if (Heed.plugins.mermaid.themeCss) {
+        const styleBlock = mermaidEl.querySelector('svg').querySelector('style');
+        styleBlock.textContent += Heed.plugins.mermaid.themeCss
+      }
+
+      const hideLabelsWithPrefix = Heed.plugins.mermaid.config?.hideLabelsWithPrefix;
+      if (hideLabelsWithPrefix) {
+        mermaidEl.querySelectorAll('text.commit-label').forEach(label => {
+          if (label.textContent.startsWith(hideLabelsWithPrefix)) {
+            label.parentNode.style.display = 'none';
+          }
+        });
+      }
     }
 
     renderTo(el) {
@@ -17,24 +59,8 @@
 
       contentPromise.then(content => {
         main.textContent = content;
-        queueMicrotask(async () => {
-
-          await window.mermaid.init(undefined, `#${this.section.id}`);
-
-          if (Heed.plugins.mermaid.themeCss) {
-            const styleBlock = main.querySelector('svg').querySelector('style');
-            styleBlock.textContent += Heed.plugins.mermaid.themeCss
-
-            const hideLabelsWithPrefix = Heed.plugins.mermaid.config?.hideLabelsWithPrefix;
-
-            if (hideLabelsWithPrefix) {
-              main.querySelectorAll('text.commit-label').forEach(label => {
-                if (label.textContent.startsWith(hideLabelsWithPrefix)) {
-                  label.parentNode.style.display = 'none';
-                }
-              });
-            }
-          }
+        queueMicrotask(() => {
+          MermaidDiagramBlock.enqueue(main);
         });
       });
 
