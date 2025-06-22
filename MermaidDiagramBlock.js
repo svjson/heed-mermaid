@@ -20,8 +20,10 @@
       try {
         while (this.renderQueue.length > 0) {
           const mermaidEl = this.renderQueue.shift();
-          await window.mermaid.init(undefined, mermaidEl);
-          this.postMermaidRender(mermaidEl);
+          if (mermaidEl && mermaidEl.isConnected) {
+            await window.mermaid.init(undefined, mermaidEl);
+            this.postMermaidRender(mermaidEl);
+          }
         }
       } catch (e) {
         console.error('Mermaid render error: ', e);
